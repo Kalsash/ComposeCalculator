@@ -1,4 +1,4 @@
-package com.example.composecalculator
+package com.example.composecalculator.viewmodel
 
 import kotlinx.coroutines.flow.StateFlow
 

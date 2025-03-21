@@ -1,4 +1,4 @@
-package com.example.composecalculator
+package com.example.composecalculator.viewmodel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

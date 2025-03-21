@@ -3,7 +3,6 @@ package com.example.composecalculator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,12 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextAlign
 import com.example.composecalculator.ui.theme.ComposeCalculatorTheme
+import com.example.composecalculator.viewmodel.CalculatorViewModel
+import com.example.composecalculator.viewmodel.Operation
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CalculatorViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             ComposeCalculatorTheme {
                 Surface(
@@ -39,20 +40,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CalculatorScreen(viewModel: Calculator) {
+fun CalculatorScreen(viewModel: CalculatorViewModel) {
     val display by viewModel.display.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Display
         Text(
             text = display,
-            fontSize = 48.sp,
+            fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,23 +64,21 @@ fun CalculatorScreen(viewModel: Calculator) {
         // Buttons
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Первый ряд: C, ±, %, ÷
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CalculatorButton("C", onClick = { viewModel.reset() })
-                CalculatorButton("±", onClick = { viewModel.toggleSign() })
+                CalculatorButton("AC", onClick = { viewModel.clear() })
                 CalculatorButton("%", onClick = { viewModel.addOperation(Operation.PERC) })
                 CalculatorButton("÷", onClick = { viewModel.addOperation(Operation.DIV) })
             }
 
-            // Второй ряд: 7, 8, 9, ×
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CalculatorButton("7", onClick = { viewModel.addDigit(7) })
                 CalculatorButton("8", onClick = { viewModel.addDigit(8) })
@@ -87,10 +86,9 @@ fun CalculatorScreen(viewModel: Calculator) {
                 CalculatorButton("×", onClick = { viewModel.addOperation(Operation.MUL) })
             }
 
-            // Третий ряд: 4, 5, 6, -
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CalculatorButton("4", onClick = { viewModel.addDigit(4) })
                 CalculatorButton("5", onClick = { viewModel.addDigit(5) })
@@ -98,10 +96,9 @@ fun CalculatorScreen(viewModel: Calculator) {
                 CalculatorButton("-", onClick = { viewModel.addOperation(Operation.SUB) })
             }
 
-            // Четвертый ряд: 1, 2, 3, +
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CalculatorButton("1", onClick = { viewModel.addDigit(1) })
                 CalculatorButton("2", onClick = { viewModel.addDigit(2) })
@@ -109,21 +106,12 @@ fun CalculatorScreen(viewModel: Calculator) {
                 CalculatorButton("+", onClick = { viewModel.addOperation(Operation.ADD) })
             }
 
-            // Пятый ряд: 0, ., =
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Кнопка "0" занимает больше места
-                Button(
-                    onClick = { viewModel.addDigit(0) },
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(160.dp) // Фиксированная ширина для кнопки "0"
-                        .height(80.dp) // Фиксированная высота
-                ) {
-                    Text(text = "0", fontSize = 24.sp)
-                }
+                CalculatorButton("0", onClick = { viewModel.addDigit(0) })
+                CalculatorButton("±", onClick = { viewModel.toggleSign() })
                 CalculatorButton(".", onClick = { viewModel.addPoint() })
                 CalculatorButton("=", onClick = { viewModel.compute() })
             }
@@ -141,10 +129,10 @@ fun CalculatorButton(
         onClick = onClick,
         shape = CircleShape,
         modifier = modifier
-            .width(80.dp) // Фиксированная ширина для кнопок
-            .height(80.dp) // Фиксированная высота
+            .width(90.dp)
+            .height(90.dp)
     ) {
-        Text(text = text, fontSize = 24.sp)
+        Text(text = text, fontSize = 28.sp)
     }
 }
 
