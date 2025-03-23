@@ -19,16 +19,23 @@ class CalculatorViewModel : ViewModel(), Calculator {
     private var k: Int = 10
     private var operation: Operation? = null
 
+
     override fun addDigit(dig: Int) {
         if (!wasCompute) {
             if (wasPoint) {
                 digit2 += dig
                 digit += dig / (k + 0.0)
                 k *= 10
-                _display.value = "${
-                    if (digit.toInt().toDouble() != digit) digit else digit.toInt()
-                }.$digit2"
-            } else {
+                _display.value = if (abs(digit - digit.toInt()) < eps) {
+                    "${digit.toInt()}"
+                }
+                else
+                {
+                    "${(kotlin.math.round(digit * e) / e)}"
+                }
+            }
+            else
+            {
                 digit = 10 * digit + dig
                 _display.value = "${digit.toInt()}"
             }
@@ -72,7 +79,7 @@ class CalculatorViewModel : ViewModel(), Calculator {
                     }
                 }
                 Operation.PERC -> digit = lastDigit!! * (digit / 100)
-                Operation.NEG -> digit *= -1 // Теперь смена знака будет работать
+                Operation.NEG -> digit *= -1
                 else -> {}
             }
             lastDigit = null
@@ -95,13 +102,20 @@ class CalculatorViewModel : ViewModel(), Calculator {
     override fun clear() {
         val currentDisplay = _display.value
 
-        if (currentDisplay.isNotEmpty()) {
+        if (currentDisplay.length > 1) {
             val newDisplay = currentDisplay.dropLast(1)
             _display.value = newDisplay
 
-            if (newDisplay.isEmpty()) {
-                reset()
+            digit = newDisplay.toDoubleOrNull() ?: 0.0
+            if (newDisplay.contains(".")) {
+                wasPoint = true
+                digit2 = newDisplay.substringAfterLast(".")
+            } else {
+                wasPoint = false
+                digit2 = ""
             }
+        } else {
+            reset()
         }
     }
 
