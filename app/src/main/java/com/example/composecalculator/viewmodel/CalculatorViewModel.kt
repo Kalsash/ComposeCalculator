@@ -19,6 +19,13 @@ class CalculatorViewModel : ViewModel(), Calculator {
     private var k: Int = 10
     private var operation: Operation? = null
 
+    private fun formatDisplayValue(value: Double): String {
+        return if (abs(value - value.toInt()) < eps) {
+            "${value.toInt()}"
+        } else {
+            "${(kotlin.math.round(value * e) / e)}"
+        }
+    }
 
     override fun addDigit(dig: Int) {
         if (!wasCompute) {
@@ -26,31 +33,26 @@ class CalculatorViewModel : ViewModel(), Calculator {
                 digit2 += dig
                 digit += dig / (k + 0.0)
                 k *= 10
-                _display.value = if (abs(digit - digit.toInt()) < eps) {
-                    "${digit.toInt()}"
-                }
-                else
-                {
-                    "${(kotlin.math.round(digit * e) / e)}"
-                }
-            }
-            else
-            {
+                _display.value = formatDisplayValue(digit)
+            } else {
                 digit = 10 * digit + dig
-                _display.value = "${digit.toInt()}"
+                _display.value = formatDisplayValue(digit)
             }
         }
     }
 
     override fun addPoint() {
-        if (!wasCompute) {
+        if (!wasCompute && !wasPoint) {
             wasPoint = true
-            _display.value = "${digit.toInt()}."
+            _display.value = "${formatDisplayValue(digit)}."
         }
     }
 
     override fun addOperation(op: Operation) {
         if (operation != null) {
+            if (operation == op) {
+                return
+            }
             compute()
         }
         lastDigit = digit
@@ -85,18 +87,14 @@ class CalculatorViewModel : ViewModel(), Calculator {
             lastDigit = null
             wasCompute = true
             if (b) {
-                if (abs(digit - digit.toInt()) < eps) {
-                    _display.value = "${digit.toInt()}"
-                } else {
-                    _display.value = "${(digit * e).toInt() / e}"
-                }
+                _display.value = formatDisplayValue(digit)
             }
         }
     }
 
     override fun toggleSign() {
         digit *= -1
-        _display.value = "$digit"
+        _display.value = formatDisplayValue(digit)
     }
 
     override fun clear() {
